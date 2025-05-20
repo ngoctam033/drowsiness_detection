@@ -51,5 +51,8 @@ dataset/
 
 # ipynb
 *.ipynb
-
 *.h5
+*.csv
+*.keras
+*.png
+*.jpg
