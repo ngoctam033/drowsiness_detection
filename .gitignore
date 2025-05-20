@@ -51,3 +51,5 @@ dataset/
 
 # ipynb
 *.ipynb
+
+*.h5
