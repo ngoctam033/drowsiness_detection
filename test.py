@@ -10,7 +10,7 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix
 
 # Root directory to search for images
-BASE_DIR = "dataset/test"  # Change to your image folder
+BASE_DIR = "test"  # Change to your image folder
 
 # Load the trained model
 try:
