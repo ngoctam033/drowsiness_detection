@@ -21,21 +21,21 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 # from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, GlobalAveragePooling2D
 
 base_dir = 'dataset/' 
-train_data = 'dataset/traineye'
-test_data = 'dataset/testeye'
+train_data = 'dataset/train'
+test_data = 'dataset/test'
 
 print(f'Folders of dataset: {os.listdir(base_dir)}')
 print(f'Train data set: {os.listdir(train_data)}')
 print(f'Test data set: {os.listdir(test_data)}')
 
 for dir in os.listdir(train_data):
-    if dir in ['Closed', 'Open']:
+    if dir in ['Yawn', 'NoYawn']:
         full_path = os.path.join(train_data, dir)
         file = gb.glob(pathname = str(full_path + '/*.jpg'))
         print(f'lenght of files {len(file)} in {dir}')
     
 for dir in os.listdir(test_data):
-    if dir in ['Closed', 'Open']:
+    if dir in ['Yawn', 'NoYawn']:
         full_path = os.path.join(test_data, dir)
         file = gb.glob(pathname = str(full_path + '/*.jpg'))
         print(f'lenght of files {len(file)} in {dir}')
@@ -55,7 +55,7 @@ def show_image(train_data):
                     plt.show()  
                     break  
 
-code = {'Closed':0, 'Open':1}
+code = {'NoYawn':0, 'Yawn':1}
 def getCode(n):
     for x,y in code.items():
         if n==y:
@@ -64,7 +64,7 @@ def getCode(n):
 
 size = []
 for dir in os.listdir(train_data):
-    if dir in ['Closed', 'Open']:
+    if dir in ['NoYawn', 'Yawn']:
         full_path = os.path.join(train_data,dir)
         files = gb.glob(pathname = str(full_path + '/*.jpg'))
         for file in files:
@@ -76,7 +76,7 @@ s = 224
 X_train = []
 y_train = []
 for dir in os.listdir(train_data):
-    if dir in ['Closed', 'Open']:
+    if dir in ['NoYawn', 'Yawn']:
         full_path = os.path.join(train_data,dir)
         files = gb.glob(pathname = str(full_path + '/*.jpg'))
         for file in files:
@@ -94,7 +94,7 @@ s=224
 X_test = []
 y_test = []
 for dir in os.listdir(test_data):
-    if dir in ['Closed', 'Open']:
+    if dir in ['NoYawn', 'Yawn']:
         full_path = os.path.join(test_data,dir)
         files = gb.glob(pathname = str(full_path + '/*.jpg'))
         for file in files:
@@ -221,7 +221,7 @@ history = Drowsiness_detection.fit(
     callbacks=[early_stopping, reduce_lr, model_checkpoint]
 )
 
-Drowsiness_detection.save("drowsiness_eye_cnn_model.h5")
+Drowsiness_detection.save("mouth_yawn_model.h5")
 
 os.listdir("./")
 
@@ -246,7 +246,7 @@ plt.ylabel('Loss')
 plt.legend()
 plt.show()
 
-Indexcode = {0: 'Closed', 1: 'Open'}
+Indexcode = {0: 'NoYawn', 1: 'Yawn'}
 def getLabel(one_hot_vector):
     class_index = int(np.argmax(one_hot_vector))  # Get the class index
     print(f"DEBUG: class_index = {class_index}")  #  Print class index for debugging
@@ -280,9 +280,9 @@ predicted_label = getLabel(prediction)
 print(f"Predicted Class: {predicted_label}")
 
 # Convert to Active/Drowsy decision
-if predicted_label in ["Closed"]:  # Closed or Yawn means Drowsy
+if predicted_label in ["Yawn"]:  # Closed or Yawn means Drowsy
     print("Final Output: Drowsy")
-elif predicted_label in ["Open"]:  # Open or No Yawn means Active
+elif predicted_label in ["NoYawn"]:  # Open or No Yawn means Active
     print("Final Output: Active")
 else:
     print("Final Output: Unknown")  # Handle unexpected cases
