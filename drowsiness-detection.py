@@ -43,13 +43,6 @@ drowsy_status = False
 prev_time = time.time()
 fps_counter = 0
 fps = 0
-
-def eye_aspect_ratio(eye):
-	A = distance.euclidean(eye[1], eye[5])
-	B = distance.euclidean(eye[2], eye[4])
-	C = distance.euclidean(eye[0], eye[3])
-	ear = (A + B) / (2.0 * C)
-	return ear
     
 def extract_eye_region(eye_points, frame):
     # Create pounding box around the eye points
@@ -75,11 +68,11 @@ def preprocess_eye(eye_region):
     if eye_region is None or eye_region.size == 0:
         return None
         
-    # Change color space from BGR to RGB
-    eye_rgb = cv2.cvtColor(eye_region, cv2.COLOR_BGR2RGB)
+    # Change color space from BGR to Gray
+    eye_gray = cv2.cvtColor(eye_region, cv2.COLOR_BGR2GRAY)
     
     # Resize the eye region to the input size of the model (224x224)
-    eye_resized = cv2.resize(eye_rgb, (224, 224))
+    eye_resized = cv2.resize(eye_gray, (224, 224))
     
     # Normalize the eye region
     normalization_layer.adapt(eye_resized)
@@ -120,7 +113,8 @@ while True:
     if not ret:
         print("Error: Cannot read frame from camera")
         break
-        
+    class_idx = 1  # Default to 'Open'
+    class_name = "Open"   
     # Flip frame horizontally for easier front camera usage
     frame = cv2.flip(frame, 1)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -130,9 +124,6 @@ while True:
         shape = face_utils.shape_to_np(shape)
         leftEye = shape[lStart:lEnd]
         rightEye = shape[rStart:rEnd]
-        leftEAR = eye_aspect_ratio(leftEye)
-        rightEAR = eye_aspect_ratio(rightEye)
-        ear = (leftEAR + rightEAR) / 2.0
         leftEyeHull = cv2.convexHull(leftEye)
         rightEyeHull = cv2.convexHull(rightEye)
         

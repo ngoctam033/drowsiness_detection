@@ -10,7 +10,7 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix
 
 # Root directory to search for images
-BASE_DIR = "test"  # Change to your image folder
+BASE_DIR = "dataset/test"  # Change to your image folder
 
 # Load the trained model
 try:
@@ -43,7 +43,8 @@ def find_all_images(base_dir):
     return image_paths
 
 def preprocess_frame(frame):
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    # convert to gray
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     frame_array = cv2.resize(frame, (224,224))
     normalization_layer = layers.Normalization()
     normalization_layer.adapt(frame_array)

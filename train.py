@@ -81,8 +81,8 @@ for dir in os.listdir(train_data):
         files = gb.glob(pathname = str(full_path + '/*.jpg'))
         for file in files:
             print(f'Processing {file}')
-            image = cv2.imread(file)
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+            # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             image_array = cv2.resize(image, (s,s))
             X_train.append(image_array)
             y_train.append(code.get(dir))
@@ -98,8 +98,8 @@ for dir in os.listdir(test_data):
         full_path = os.path.join(test_data,dir)
         files = gb.glob(pathname = str(full_path + '/*.jpg'))
         for file in files:
-            image = cv2.imread(file)
-            image = cv2.cvtColor(image , cv2.COLOR_BGR2RGB)
+            image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+            # image = cv2.cvtColor(image , cv2.COLOR_BGR2RGB)
             image_array = cv2.resize(image, (s,s))
             X_test.append(image_array)
             y_test.append(code.get(dir))
@@ -112,6 +112,9 @@ X_train = np.array(X_train)
 X_test = np.array(X_test)
 y_train = np.array(y_train)
 y_test = np.array(y_test)
+
+X_train = np.expand_dims(X_train, axis=-1) # shape: (1234, 224, 224, 1)
+X_test = np.expand_dims(X_test, axis=-1) # shape: (433, 224, 224, 1)
 
 print("Shape of X_train:", X_train.shape)
 print("Shape of X_test:", X_test.shape)
@@ -143,7 +146,7 @@ print(f"unique values of y_test: {np.unique(y_test)}")
 Drowsiness_detection = models.Sequential([
 
     # Conv Layer 1
-    layers.Conv2D(filters=16, kernel_size=3, activation='relu', input_shape=(224,224,3)),
+    layers.Conv2D(filters=16, kernel_size=3, activation='relu', input_shape=(224,224,1)),
     layers.MaxPooling2D(pool_size=2),
 
     # Conv Layer 2

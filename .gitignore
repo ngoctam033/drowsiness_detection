@@ -56,3 +56,6 @@ dataset/
 *.keras
 *.png
 *.jpg
+
+# env
+venv
