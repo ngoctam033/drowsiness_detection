@@ -3,7 +3,7 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras import layers
 import time
-
+import pygame
 from scipy.spatial import distance
 from imutils import face_utils
 import dlib
@@ -182,6 +182,7 @@ def get_eye_prediction(preprocessed_eye):
     class_idx = np.argmax(prediction)
     confidence = prediction[0][class_idx]
     class_name = eye_class_names[class_idx]
+    # print(f"Eye prediction: {class_name} with confidence {confidence:.2f} (index {class_idx})")
     return class_name, confidence, class_idx
 
 def get_mouth_prediction(preprocessed_mouth):
@@ -193,6 +194,9 @@ def get_mouth_prediction(preprocessed_mouth):
     class_idx = np.argmax(prediction)
     confidence = prediction[0][class_idx]
     class_name = mouth_class_names[class_idx]
+    # if class_idx == 1:
+    #     confidence = 1 - confidence
+    print(f"Mouth prediction: {class_name} with confidence {confidence:.2f} (index {class_idx})")
     return class_name, confidence, class_idx
 
 def get_stable_prediction(predictions_history, current_prediction):
@@ -227,6 +231,17 @@ def determine_drowsiness_state(eye_class_idx, mouth_class_idx, eye_confidence, m
         return "Drowsy (Yawn)", mouth_confidence, 1
     else:
         return "Alert", min(eye_confidence, mouth_confidence) if eye_confidence > 0 and mouth_confidence > 0 else max(eye_confidence, mouth_confidence), 0
+
+def raise_alert():
+    # Play alert sound using pygame
+    try:
+        pygame.mixer.init()
+        sound_path = "alert.mp3"  # Ensure you have an alert.mp3 file in your working directory
+        if not pygame.mixer.get_busy():
+            pygame.mixer.music.load(sound_path)
+            pygame.mixer.music.play()
+    except Exception as e:
+        print("Could not play alert sound with pygame:", e)
 
 # Initialize webcam
 cap = cv2.VideoCapture(0)
@@ -426,19 +441,24 @@ while True:
         if drowsiness_level == 2:  # Very drowsy
             alert_text = "EXTREME DROWSINESS ALERT!"
             alert_color = (0, 0, 255)  # Red
+            raise_alert()
         elif eye_frame_counter >= detection_threshold and mouth_frame_counter >= detection_threshold:
             alert_text = "MULTIPLE DROWSINESS SIGNS!"
             alert_color = (0, 100, 255)  # Orange-red
+            raise_alert()
         elif eye_frame_counter >= detection_threshold:
             alert_text = "EYES CLOSED ALERT!"
             alert_color = (0, 0, 255)  # Red
+            raise_alert()
         elif mouth_frame_counter >= detection_threshold:
             alert_text = "YAWNING DETECTED!"
             alert_color = (0, 165, 255)  # Orange
+            raise_alert()
         else:
             alert_text = "DROWSINESS ALERT!"
             alert_color = (0, 0, 255)  # Red
-        
+            raise_alert()
+
         alert_triggered = True
     
     # Display alert
